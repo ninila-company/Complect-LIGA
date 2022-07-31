@@ -47,6 +47,12 @@ class PaymentType(models.Model):
         return self.name
 
 
+class Customer(models.Model):
+    """Заказчик."""
+
+    pass
+
+
 class Order(models.Model):
     """Заказ."""
 
@@ -56,17 +62,17 @@ class Order(models.Model):
     year = models.PositiveSmallIntegerField('Год')
     customer = models.CharField('Заказчик', max_length=200)
     circulation = models.PositiveSmallIntegerField('Тираж')
-    equipment = models.ForeignKey(Equipment, 'Название оборудования',
+    equipment = models.ForeignKey(Equipment, verbose_name='Название оборудования',
                                   on_delete=models.SET_NULL, null=True)
     date_of_acceptance_of_the_order = models.DateField('Дата принятия заказа',
                                                        default=date.today)
     date_of_delivery_of_the_order = models.DateField('Дата сдачи заказа')
-    manager = models.ForeignKey(Manager, 'Менеджер', on_delete=models.SET_NULL,
+    manager = models.ForeignKey(Manager, verbose_name='Менеджер', on_delete=models.SET_NULL,
                                 null=True)
     the_amount_of_the_deal = models.DecimalField('Сумма договора', max_digits=20, decimal_places=2)
     the_date_of_payment = models.DateField('Дата оплаты')
-    payment_type = models.ForeignKey(PaymentType, 'Вид платежа', on_delete=models.SET_NULL,
-                                     null=True)
+    payment_type = models.ForeignKey(PaymentType, verbose_name='Вид платежа',
+                                     on_delete=models.SET_NULL, null=True)
     readiness = models.BooleanField('Готовность')
     hypperlink = models.CharField('Гипперссылка', max_length=100)
 

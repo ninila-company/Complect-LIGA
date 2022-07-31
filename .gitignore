@@ -61,5 +61,5 @@ db.sqlite3
 media
 static
 static_dev
-*/migrations/
+migrations/
 __init__.py
