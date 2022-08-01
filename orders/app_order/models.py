@@ -50,7 +50,17 @@ class PaymentType(models.Model):
 class Customer(models.Model):
     """Заказчик."""
 
-    pass
+    name = models.CharField('Наименование', max_length=200)
+    phone = models.PositiveIntegerField('Номер телефона')
+    email = models.EmailField('Почта', max_length=254)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'Заказчик'
+        verbose_name_plural = 'Заказчики'
+
+    def __str__(self):
+        return self.name
 
 
 class Order(models.Model):

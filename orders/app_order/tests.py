@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Manager, Equipment
+from .models import Customer, Manager, Equipment
 
 
 class ManagerTests(TestCase):
@@ -40,3 +40,25 @@ class EquipmentTest(TestCase):
         equipment = Equipment.objects.get(id=1)
         name = f'{equipment.name}'
         self.assertEqual(name, 'Test_Equipment')
+
+
+class CustomerTest(TestCase):
+    """Проверка создания модели 'заказчик'."""
+
+    @classmethod
+    def setUpTestData(cls):
+        testuser1 = User.objects.create_user(username='testuser1', password='abc123')
+        testuser1.save()
+
+        test_customer = Customer.objects.create(name='Test Customer', phone=1234567,
+                                                email='test@mail.ru')
+        test_customer.save()
+
+    def test_customer(self):
+        customer = Customer.objects.get(id=1)
+        name = f'{customer.name}'
+        phone = f'{customer.phone}'
+        email = f'{customer.email}'
+        self.assertEqual(name, 'Test Customer')
+        self.assertEqual(phone, '1234567')
+        self.assertEqual(email, 'test@mail.ru')

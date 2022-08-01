@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Equipment, Manager, Order, PaymentType
+from .models import Customer, Equipment, Manager, Order, PaymentType
 
 
 @admin.register(Manager)
@@ -15,6 +15,11 @@ class EquipmentAdmin(admin.ModelAdmin):
 
 @admin.register(PaymentType)
 class PaymentTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+@admin.register(Customer)
+class CastomerAdmit(admin.ModelAdmin):
     list_display = ('name',)
 
 
