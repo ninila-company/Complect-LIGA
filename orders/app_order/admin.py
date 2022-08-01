@@ -5,7 +5,7 @@ from .models import Customer, Equipment, Manager, Order, PaymentType
 
 @admin.register(Manager)
 class ManagerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'phone')
+    list_display = ('name', 'email', 'phoneNumber')
 
 
 @admin.register(Equipment)
@@ -20,7 +20,7 @@ class PaymentTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Customer)
 class CastomerAdmit(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'email', 'phoneNumber')
 
 
 @admin.register(Order)

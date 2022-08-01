@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.core.validators import RegexValidator
 from django.db import models
 
 
@@ -7,7 +8,10 @@ class Manager(models.Model):
     """Менеджер."""
 
     name = models.CharField('Ф.И.О.', max_length=200, db_index=True)
-    phone = models.PositiveIntegerField('Номер телефона')
+    phoneNumberRegex = RegexValidator(regex=r'^\+?1?\d{8,15}$',
+                                      message='Номер должен быть в формате: +79999999999')
+    phoneNumber = models.CharField('Номер телефона', validators=[phoneNumberRegex], max_length=12,
+                                   unique=True, default='+79999999999')
     email = models.EmailField('Почта', max_length=254)
 
     class Meta:
@@ -50,8 +54,11 @@ class PaymentType(models.Model):
 class Customer(models.Model):
     """Заказчик."""
 
-    name = models.CharField('Наименование', max_length=200)
-    phone = models.PositiveIntegerField('Номер телефона')
+    name = models.CharField('Наименование', max_length=200, unique=True)
+    phoneNumberRegex = RegexValidator(regex=r'^\+?1?\d{8,15}$',
+                                      message='Номер должен быть в формате: +79999999999')
+    phoneNumber = models.CharField('Номер телефона', validators=[phoneNumberRegex], max_length=12,
+                                   unique=True, default='+79999999999')
     email = models.EmailField('Почта', max_length=254)
 
     class Meta:
@@ -70,7 +77,8 @@ class Order(models.Model):
     name = models.CharField('Название заказа', max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
     year = models.PositiveSmallIntegerField('Год')
-    customer = models.CharField('Заказчик', max_length=200)
+    customer = models.ForeignKey(Customer, verbose_name='Заказчик', on_delete=models.SET_NULL,
+                                 null=True)
     circulation = models.PositiveSmallIntegerField('Тираж')
     equipment = models.ForeignKey(Equipment, verbose_name='Название оборудования',
                                   on_delete=models.SET_NULL, null=True)
