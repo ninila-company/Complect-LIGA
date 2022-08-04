@@ -76,6 +76,7 @@ class Order(models.Model):
     number_order = models.PositiveSmallIntegerField('Номер заказа')
     name = models.CharField('Название заказа', max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
+    description = models.TextField('Описание заказа', default='Описание...', blank=True)
     year = models.PositiveSmallIntegerField('Год')
     customer = models.ForeignKey(Customer, verbose_name='Заказчик', on_delete=models.SET_NULL,
                                  null=True)
