@@ -1,6 +1,16 @@
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from django import forms
 from django.contrib import admin
 
 from .models import Customer, Equipment, Manager, Order, PaymentType
+
+
+class OrderAdminForm(forms.ModelForm):
+    description = forms.CharField(label='Описание', widget=CKEditorUploadingWidget)
+
+    class Meta:
+        model = Order
+        fields = '__all__'
 
 
 @admin.register(Manager)
@@ -32,3 +42,4 @@ class OrderAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     list_filter = ('name', 'manager',)
     list_editable = ('manager', 'readiness')
+    form = OrderAdminForm

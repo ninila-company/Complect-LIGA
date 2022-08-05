@@ -1,3 +1,4 @@
+from django.urls import reverse
 from datetime import date
 
 from django.core.validators import RegexValidator
@@ -76,6 +77,7 @@ class Order(models.Model):
     number_order = models.PositiveSmallIntegerField('Номер заказа')
     name = models.CharField('Название заказа', max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
+    description = models.TextField('Описание заказа', default='Описание...', blank=True)
     year = models.PositiveSmallIntegerField('Год')
     customer = models.ForeignKey(Customer, verbose_name='Заказчик', on_delete=models.SET_NULL,
                                  null=True)
@@ -101,3 +103,9 @@ class Order(models.Model):
 
     def __str__(self):
         return self.name
+
+    # def get_absolute_url(self):
+    #     # return "/admin/app_order/order/%i/change" % self.id
+
+    def get_absolute_url(self):
+        return reverse('app_order:order_detail', args=[self.id, self.slug])
