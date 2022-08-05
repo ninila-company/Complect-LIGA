@@ -1,3 +1,4 @@
+from django.urls import reverse
 from datetime import date
 
 from django.core.validators import RegexValidator
@@ -102,3 +103,9 @@ class Order(models.Model):
 
     def __str__(self):
         return self.name
+
+    # def get_absolute_url(self):
+    #     # return "/admin/app_order/order/%i/change" % self.id
+
+    def get_absolute_url(self):
+        return reverse('app_order:order_detail', args=[self.id, self.slug])
