@@ -1,9 +1,9 @@
-# from django.db.models import Q
+from django.db.models import Q
 # from django.shortcuts import render
 # from django.views.generic.base import View
 from django.views.generic import DetailView, ListView
 
-from .models import Order, Manager
+from .models import Order, Manager, Equipment
 
 
 class Managers:
@@ -13,13 +13,20 @@ class Managers:
         return Manager.objects.all()
 
 
-class OrdersView(Managers, ListView):
+class Equipments:
+    """Оборудование."""
+
+    def get_equipment(self):
+        return Equipment.objects.all()
+
+
+class OrdersView(Managers, Equipments, ListView):
     model = Order
     queryset = Order.objects.order_by('completeness', 'date_of_delivery_of_the_order')
     template_name = 'app_order/orders_list.html'
 
 
-class OrderDetailView(Managers, DetailView):
+class OrderDetailView(DetailView):
     """Детали заказа."""
 
     model = Order
@@ -30,13 +37,16 @@ class OrderDetailView(Managers, DetailView):
         return context
 
 
-class FilterOrdersView(Managers, ListView):
+class FilterOrdersView(Managers, Equipments, ListView):
     """Фильтрация заказов."""
 
     template_name = 'app_order/orders_list.html'
 
     def get_queryset(self):
-        queryset = Order.objects.filter(manager__name__in=self.request.GET.getlist('name'))
+        queryset = Order.objects.filter(
+            Q(manager__name__in=self.request.GET.getlist('managerName')) |
+            Q(equipment__name__in=self.request.GET.getlist('equipmentName'))
+        )
         return queryset
 
 

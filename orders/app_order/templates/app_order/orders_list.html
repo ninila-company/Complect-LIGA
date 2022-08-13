@@ -2,68 +2,101 @@
 {% load static %}
 
 {% block content %}
-    <div class="container mt-5">
-        <table class="table table-secondary">
-            <thead>
-                <tr>
-                    <th scope="col">Номер заказа</th>
-                    <th scope="col">Название заказа</th>
-                    <th scope="col">Заказчик</th>
-                    <th scope="col">Менеджер</th>
-                    <th scope="col">Дата сдачи заказа</th>
-                    <th scope="col">Завершен</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in order_list %}
-                <tr>
-                    {% if order.completeness == True %}
-                    <td class="table-light">
-                        <s>{{ order.number_order }}</s>
-                    </td>
-                    <td class="table-light">
-                        <s><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></s>
-                    </td>
-                    <td class="table-light">
-                        <s>{{ order.customer }}</s>
-                    </td>
-                    <td class="table-light">
-                        <s>{{ order.manager }}</s>
-                    </td>
-                    <td class="table-light">
-                        <s>{{ order.date_of_delivery_of_the_order }}</s>
-                    </td>
-                    <td class="table-light">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
-                    </td>
+<div class="container mt-3">
 
-                    {% elif order.readiness == True %}
-                    <td class="table-success">{{ order.number_order }}</td>
-                    <td class="table-success">
-                        <a href="{{ order.get_absolute_url }}">{{ order.name }}</a>
-                    </td>
-                    <td class="table-success">{{ order.customer }}</td>
-                    <td class="table-success">{{ order.manager }}</td>
-                    <td class="table-success">{{ order.date_of_delivery_of_the_order }}</td>
-                    <td class="table-success">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    </td>
+    <form action="{% url 'order:filter' %}" method="get">
+        <div class="flex-shrink-0 bg-white">
+            <div class="row">
+                <ul class="list-unstyled ps-0 col">
+                    {% for manager in view.get_managers %}
+                        <li class="m-1">
+                            <input type="checkbox" class="checked" name="managerName" value="{{ manager.name }}">
+                            <span>{{ manager.name }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
 
-                    {% else %}
-                    <td class="table-warning">{{ order.number_order }}</td>
-                    <td class="table-warning">
-                        <a href="{{ order.get_absolute_url }}">{{ order.name }}</a>
-                    </td>
-                    <td class="table-warning">{{ order.customer }}</td>
-                    <td class="table-warning">{{ order.manager }}</td>
-                    <td class="table-warning">{{ order.date_of_delivery_of_the_order }}</td>
-                    <td class="table-warning">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                <ul class="list-unstyled ps-0 col">
+                    {% for equipment in view.get_equipment %}
+                    <li class="m-1">
+                        <input type="checkbox" class="checked" name="equipmentName" value="{{ equipment.name }}">
+                        <span>{{ equipment.name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button type="submit">Выбрать</button>
+            <div class="border-top my-3"></div>
+        </div>
+    </form>
+
+    <table class="table table-secondary">
+        <thead>
+            <tr>
+                <th scope="col">Номер заказа</th>
+                <th scope="col">Название заказа</th>
+                <th scope="col">Заказчик</th>
+                <th scope="col">Менеджер</th>
+                <th scope="col">Дата сдачи заказа</th>
+                <th scope="col">Оборудование</th>
+                <th scope="col">Завершен</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in order_list %}
+            <tr>
+                {% if order.completeness == True %}
+                <td class="table-light">
+                    <s>{{ order.number_order }}</s>
+                </td>
+                <td class="table-light">
+                    <s><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.customer }}</s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.manager }}</s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.date_of_delivery_of_the_order }}</s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.equipment }}</s>
+                </td>
+                <td class="table-light">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
+                </td>
+
+                {% elif order.readiness == True %}
+                <td class="table-success">{{ order.number_order }}</td>
+                <td class="table-success">
+                    <a href="{{ order.get_absolute_url }}">{{ order.name }}</a>
+                </td>
+                <td class="table-success">{{ order.customer }}</td>
+                <td class="table-success">{{ order.manager }}</td>
+                <td class="table-success">{{ order.date_of_delivery_of_the_order }}</td>
+                <td class="table-success">{{ order.equipment }}</td>
+                <td class="table-success">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                </td>
+
+                {% else %}
+                <td class="table-warning">{{ order.number_order }}</td>
+                <td class="table-warning">
+                    <a href="{{ order.get_absolute_url }}">{{ order.name }}</a>
+                </td>
+                <td class="table-warning">{{ order.customer }}</td>
+                <td class="table-warning">{{ order.manager }}</td>
+                <td class="table-warning">{{ order.date_of_delivery_of_the_order }}</td>
+                <td class="table-warning">{{ order.equipment }}</td>
+                <td class="table-warning">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock content %}
