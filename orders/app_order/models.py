@@ -95,6 +95,7 @@ class Order(models.Model):
                                      on_delete=models.SET_NULL, null=True)
     readiness = models.BooleanField('Готовность')
     hypperlink = models.CharField('Гипперссылка', max_length=100)
+    completeness = models.BooleanField('Заказ завершен', default=False)
 
     class Meta:
         ordering = ('-date_of_acceptance_of_the_order',)
@@ -104,8 +105,5 @@ class Order(models.Model):
     def __str__(self):
         return self.name
 
-    # def get_absolute_url(self):
-    #     # return "/admin/app_order/order/%i/change" % self.id
-
     def get_absolute_url(self):
-        return reverse('app_order:order_detail', args=[self.id, self.slug])
+        return reverse('order:order_detail', kwargs={'id': self.id, 'slug': self.slug})

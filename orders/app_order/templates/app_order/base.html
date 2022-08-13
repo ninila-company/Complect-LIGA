@@ -23,12 +23,14 @@
                         <li>
                             <a href="/" class="nav-link px-2 text-secondary">Главная</a>
                         </li>
-                        <li><a href="/admin" class="nav-link px-2 text-white">Панель администратора</a></li>
+                        <li><a href="{% url 'order:admin_order' %}" class="nav-link px-2 text-white">Панель администратора</a></li>
                     </ul>
 
-                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-                        <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..."
-                            aria-label="Search">
+                    <form action="{% url 'order:search' %}" method="get" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                        <div class="input-group mb-2">
+                            <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Поиск..." name="q">
+                            <button type="submit" class="btn btn-warning">Найти</button>
+                        <div/>
                     </form>
 
                     <div class="text-end">

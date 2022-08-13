@@ -38,8 +38,8 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('name', 'number_order', 'year', 'customer', 'circulation', 'equipment',
                     'date_of_acceptance_of_the_order', 'date_of_delivery_of_the_order', 'manager',
                     'the_amount_of_the_deal', 'the_date_of_payment', 'payment_type', 'hypperlink',
-                    'readiness')
+                    'readiness', 'completeness')
     prepopulated_fields = {'slug': ('name',)}
     list_filter = ('name', 'manager',)
-    list_editable = ('manager', 'readiness')
+    list_editable = ('manager', 'readiness', 'completeness')
     form = OrderAdminForm

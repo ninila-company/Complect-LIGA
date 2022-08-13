@@ -1,17 +1,55 @@
-from django.shortcuts import render, get_object_or_404
+# from django.db.models import Q
+# from django.shortcuts import render
+# from django.views.generic.base import View
+from django.views.generic import DetailView, ListView
 
-from .models import Order
-
-
-def order_list(request):
-    """Список заказов."""
-    orders = Order.objects.all()
-    context = {'orders': orders}
-    return render(request, 'app_order/orders_list.html', context)
+from .models import Order, Manager
 
 
-def order_detail(request, id, slug):
+class Managers:
+    """Менаджеры."""
+
+    def get_managers(self):
+        return Manager.objects.all()
+
+
+class OrdersView(Managers, ListView):
+    model = Order
+    queryset = Order.objects.order_by('completeness', 'date_of_delivery_of_the_order')
+    template_name = 'app_order/orders_list.html'
+
+
+class OrderDetailView(Managers, DetailView):
     """Детали заказа."""
-    order = get_object_or_404(Order, id=id, slug=slug)
-    context = {'order': order}
-    return render(request, 'app_order/order_detail.html', context)
+
+    model = Order
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['orders'] = Order.objects.all()
+        return context
+
+
+class FilterOrdersView(Managers, ListView):
+    """Фильтрация заказов."""
+
+    template_name = 'app_order/orders_list.html'
+
+    def get_queryset(self):
+        queryset = Order.objects.filter(manager__name__in=self.request.GET.getlist('name'))
+        return queryset
+
+
+class Search(ListView):
+    """Поиск."""
+
+    template_name = 'app_order/orders_list.html'
+
+    def get_queryset(self):
+        queryset = Order.objects.filter(name__icontains=self.request.GET.get('q').title())
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get('q')
+        return context
