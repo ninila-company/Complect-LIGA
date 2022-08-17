@@ -1,21 +1,28 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <title>List</title>
 </head>
+
 <body>
     <div id="header" class="p-3 bg-dark">
         <header>
             <div class="container">
                 <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                     <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
-                            <use xlink:href="#bootstrap"></use>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                            class="bi bi-credit-card-2-back" viewBox="0 0 16 16">
+                            <path
+                                d="M11 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1z" />
+                            <path
+                                d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm13 2v5H1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm-1 9H2a1 1 0 0 1-1-1v-1h14v1a1 1 0 0 1-1 1z" />
                         </svg>
                     </a>
 
@@ -23,19 +30,21 @@
                         <li>
                             <a href="/" class="nav-link px-2 text-secondary">Главная</a>
                         </li>
-                        <li><a href="{% url 'order:admin_order' %}" class="nav-link px-2 text-white">Панель администратора</a></li>
+                        <li><a href="{% url 'order:admin_order' %}" class="nav-link px-2 text-white">Панель
+                                администратора</a></li>
                     </ul>
 
-                    <form action="{% url 'order:search' %}" method="get" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-                        <div class="input-group mb-2">
-                            <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Поиск..." name="q">
-                            <button type="submit" class="btn btn-warning">Найти</button>
-                        <div/>
+
+                    <form action="{% url 'order:search' %}" method="get" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3"
+                        role="search">
+                        <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Поиск..."
+                            name="q" aria-label="Search">
                     </form>
 
+
                     <div class="text-end">
-                        <button type="button" class="btn btn-outline-light me-2">Login</button>
-                        <button type="button" class="btn btn-warning">Sign-up</button>
+                        <button type="button" class="btn btn-outline-light me-2">Войти</button>
+                        <button type="button" class="btn btn-primary">Sign-up</button>
                     </div>
                 </div>
             </div>
@@ -47,4 +56,5 @@
     </div>
 
 </body>
+
 </html>

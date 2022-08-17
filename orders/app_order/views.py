@@ -3,7 +3,7 @@ from django.db.models import Q
 # from django.views.generic.base import View
 from django.views.generic import DetailView, ListView
 
-from .models import Order, Manager, Equipment
+from .models import Equipment, Manager, Order
 
 
 class Managers:
@@ -21,6 +21,8 @@ class Equipments:
 
 
 class OrdersView(Managers, Equipments, ListView):
+    """Заказы."""
+
     model = Order
     queryset = Order.objects.order_by('completeness', 'date_of_delivery_of_the_order')
     template_name = 'app_order/orders_list.html'

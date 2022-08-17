@@ -81,7 +81,7 @@ class Order(models.Model):
     year = models.PositiveSmallIntegerField('Год')
     customer = models.ForeignKey(Customer, verbose_name='Заказчик', on_delete=models.SET_NULL,
                                  null=True)
-    circulation = models.PositiveSmallIntegerField('Тираж')
+    circulation = models.PositiveIntegerField('Тираж')
     equipment = models.ForeignKey(Equipment, verbose_name='Название оборудования',
                                   on_delete=models.SET_NULL, null=True)
     date_of_acceptance_of_the_order = models.DateField('Дата принятия заказа',
