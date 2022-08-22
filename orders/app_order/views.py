@@ -51,6 +51,7 @@ class OrdersView(Managers, Equipments, ProductsType, ListView):
                                        'product_type')
 
     def get_total(self):
+        """Итоговая сумма."""
         queryset = Order.objects.aggregate(total=Sum('the_amount_of_the_deal'))
         return queryset['total']
 
@@ -90,6 +91,7 @@ class FilterOrdersView(Managers, Equipments, ProductsType, ListView):
         return context
 
     def get_total(self):
+        """Итоговая сумма."""
         queryset = Order.objects.filter(
             Q(manager__name__in=self.request.GET.getlist('managerName')) |
             Q(equipment__name__in=self.request.GET.getlist('equipmentName')) |
@@ -126,5 +128,6 @@ class LoginUser(LoginView):
 
 
 def logout_user(request):
+    """Выход."""
     logout(request)
     return redirect('/')
