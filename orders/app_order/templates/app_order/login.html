@@ -1,0 +1,33 @@
+{% extends "app_order/base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <div class="modal modal-signin position-static d-block bg-secondary py-5" tabindex="-1" role="dialog"
+        id="modalSignin">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header p-5 pb-4 border-bottom-0">
+                    <h2 class="fw-bold mb-0">Авторизация</h2>
+                </div>
+
+                <div class="modal-body p-5 pt-0">
+                    <form class="" method="post">
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <div class="form-error">{{ form.non_field_errors }}</div>
+
+                            {% for f in form %}
+                                <p><label class="form-label for="{{ f.id_for_label }}">{{ f.label }}: </label>{{ f }}</p>
+                                <div class="form-error">{{ f.errors }}</div>
+                            {% endfor %}
+
+                        </div>
+
+                        <button class="w-100 mb-2 btn btn-lg rounded btn-primary" type="submit">Войти</button>
+                        <hr class="my-4">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

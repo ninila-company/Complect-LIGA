@@ -1,6 +1,10 @@
 {% extends "app_order/base.html" %}
 {% load static %}
 
+{% block title %}
+    {{ title }}
+{% endblock title %}
+
 {% block content %}
 <div class="container mt-3">
 
@@ -24,11 +28,22 @@
                     </li>
                     {% endfor %}
                 </ul>
+
+                <ul class="list-unstyled ps-0 col">
+                    {% for type in view.get_type %}
+                    <li class="m-1">
+                        <input type="checkbox" class="checked" name="producttypeName" value="{{ type.name }}">
+                        <span>{{ type.name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
-            <button type="submit" class="btn btn-primary">Выбрать</button>
+            <button type="submit" class="btn btn-outline-primary">Выбрать</button>
             <div class="border-top my-3"></div>
         </div>
     </form>
+
+    <p>{{ view.get_total }}</p>
 
     <table class="table table-secondary">
         <thead>
@@ -39,7 +54,7 @@
                 <th scope="col">Менеджер</th>
                 <th scope="col">Дата сдачи заказа</th>
                 <th scope="col">Оборудование</th>
-                <th scope="col">Завершен</th>
+                <th scope="col">Тип продукции</th>
             </tr>
         </thead>
         <tbody>
@@ -65,7 +80,7 @@
                     <s>{{ order.equipment }}</s>
                 </td>
                 <td class="table-light">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
+                    <s>{{ order.product_type }}</s>
                 </td>
 
                 {% elif order.readiness == True %}
@@ -77,9 +92,7 @@
                 <td class="table-success">{{ order.manager }}</td>
                 <td class="table-success">{{ order.date_of_delivery_of_the_order }}</td>
                 <td class="table-success">{{ order.equipment }}</td>
-                <td class="table-success">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                </td>
+                <td class="table-success">{{ order.product_type }}</td>
 
                 {% else %}
                 <td class="table-warning">{{ order.number_order }}</td>
@@ -90,9 +103,7 @@
                 <td class="table-warning">{{ order.manager }}</td>
                 <td class="table-warning">{{ order.date_of_delivery_of_the_order }}</td>
                 <td class="table-warning">{{ order.equipment }}</td>
-                <td class="table-warning">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                </td>
+                <td class="table-warning">{{ order.product_type }}</td>
                 {% endif %}
             </tr>
             {% endfor %}

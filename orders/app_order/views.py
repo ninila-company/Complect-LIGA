@@ -1,9 +1,12 @@
+from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView
 from django.db.models import Q
-# from django.shortcuts import render
-# from django.views.generic.base import View
+from django.shortcuts import redirect
 from django.views.generic import DetailView, ListView
+from django.db.models import Sum
 
-from .models import Equipment, Manager, Order
+from .forms import LoginUserForm
+from .models import Equipment, Manager, Order, ProductType
 
 
 class Managers:
@@ -20,12 +23,36 @@ class Equipments:
         return Equipment.objects.all()
 
 
-class OrdersView(Managers, Equipments, ListView):
+class ProductsType:
+    """Типы продукции."""
+
+    def get_type(self):
+        return ProductType.objects.all()
+
+
+class OrdersView(Managers, Equipments, ProductsType, ListView):
     """Заказы."""
 
     model = Order
-    queryset = Order.objects.order_by('completeness', 'date_of_delivery_of_the_order')
     template_name = 'app_order/orders_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['orders'] = Order.objects.all()
+        context['title'] = 'Главная страница'
+        return context
+
+    def get_queryset(self):
+        queryset = Order.objects.order_by('completeness', 'date_of_delivery_of_the_order')
+        return queryset.select_related('customer',
+                                       'manager',
+                                       'equipment',
+                                       'payment_type',
+                                       'product_type')
+
+    def get_total(self):
+        queryset = Order.objects.aggregate(total=Sum('the_amount_of_the_deal'))
+        return queryset['total']
 
 
 class OrderDetailView(DetailView):
@@ -36,10 +63,11 @@ class OrderDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['orders'] = Order.objects.all()
+        context['title'] = context['order']
         return context
 
 
-class FilterOrdersView(Managers, Equipments, ListView):
+class FilterOrdersView(Managers, Equipments, ProductsType, ListView):
     """Фильтрация заказов."""
 
     template_name = 'app_order/orders_list.html'
@@ -47,9 +75,28 @@ class FilterOrdersView(Managers, Equipments, ListView):
     def get_queryset(self):
         queryset = Order.objects.filter(
             Q(manager__name__in=self.request.GET.getlist('managerName')) |
-            Q(equipment__name__in=self.request.GET.getlist('equipmentName'))
-        )
-        return queryset
+            Q(equipment__name__in=self.request.GET.getlist('equipmentName')) |
+            Q(product_type__name__in=self.request.GET.getlist('producttypeName'))
+        ).order_by('completeness', 'date_of_delivery_of_the_order')
+        return queryset.select_related('customer',
+                                       'equipment',
+                                       'manager',
+                                       'payment_type',
+                                       'product_type')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Фильтр: "
+        return context
+
+    def get_total(self):
+        queryset = Order.objects.filter(
+            Q(manager__name__in=self.request.GET.getlist('managerName')) |
+            Q(equipment__name__in=self.request.GET.getlist('equipmentName')) |
+            Q(product_type__name__in=self.request.GET.getlist('producttypeName'))).aggregate(
+                Sum('the_amount_of_the_deal')
+            )
+        return queryset['the_amount_of_the_deal__sum']
 
 
 class Search(ListView):
@@ -59,9 +106,25 @@ class Search(ListView):
 
     def get_queryset(self):
         queryset = Order.objects.filter(name__icontains=self.request.GET.get('q').title())
-        return queryset
+        return queryset.select_related('customer', 'equipment', 'manager', 'payment_type')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["q"] = self.request.GET.get('q')
+        context['q'] = self.request.GET.get('q')
+        context['title'] = f"Поиск:{context['q']}"
         return context
+
+
+class LoginUser(LoginView):
+    """Логин."""
+
+    form_class = LoginUserForm
+    template_name = 'app_order/login.html'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('/')
