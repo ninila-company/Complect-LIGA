@@ -13,4 +13,5 @@ urlpatterns = [
     path('search/', Search.as_view(), name='search'),
     path('login/', LoginUser.as_view(), name='login'),
     path('logout/', logout_user, name='logout'),
+    path('app_order/order/<int:order_id>/pdf/', views.admin_order_pdf, name='admin_order_pdf')
 ]

@@ -1,9 +1,12 @@
+import weasyprint
+from django.conf import settings
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
-from django.db.models import Q
-from django.shortcuts import redirect
+from django.db.models import Q, Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.views.generic import DetailView, ListView
-from django.db.models import Sum
 
 from .forms import LoginUserForm
 from .models import Equipment, Manager, Order, ProductType
@@ -131,3 +134,16 @@ def logout_user(request):
     """Выход."""
     logout(request)
     return redirect('/')
+
+
+def admin_order_pdf(request, order_id):
+    """Генерация pdf файла."""
+    order = get_object_or_404(Order, id=order_id)
+    template_name = 'app_order/pdf.html'
+    html = render_to_string(template_name, {'order': order})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename=\"order_{order.id}.pdf"'
+    weasyprint.HTML(string=html).write_pdf(response,
+                                           stylesheets=[weasyprint.CSS(
+                                            settings.STATIC_ROOT + 'css/pdf.css')])
+    return response
