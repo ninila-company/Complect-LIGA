@@ -57,6 +57,7 @@ def export_to_csv(modeladmin, request, queryset):
     header = []
     for field in fields:
         header.append(field.verbose_name)
+    header = header[1:3] + header[4:5] + header[6:16]  # выбор нужных полей
     writer.writerow(header)
     # запись данных в колонки
     for obj in queryset:
@@ -66,6 +67,7 @@ def export_to_csv(modeladmin, request, queryset):
             if isinstance(value, datetime.datetime):
                 value = value.strftime('%d/%m/%Y')
             data_row.append(value)
+        data_row = data_row[1:3] + data_row[4:5] + data_row[6:16]  # выбор нужных полей
         writer.writerow(data_row)
     return response
 
