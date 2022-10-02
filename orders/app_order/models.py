@@ -66,6 +66,19 @@ class ProductType(models.Model):
         return self.name
 
 
+class Postprint(models.Model):
+    """Постпечать"""
+
+    name = models.CharField('Постпечать', max_length=200)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'Постпечать'
+
+    def __str__(self):
+        return self.name
+
+
 class Customer(models.Model):
     """Заказчик."""
 
@@ -100,7 +113,7 @@ class Order(models.Model):
     circulation = models.PositiveIntegerField('Тираж')
     equipment = models.ForeignKey(Equipment, verbose_name='Название оборудования',
                                   on_delete=models.SET_NULL, null=True,
-                                  default=4)
+                                  default=1)
     date_of_acceptance_of_the_order = models.DateField('Дата принятия заказа',
                                                        default=date.today)
     date_of_delivery_of_the_order = models.DateField('Дата сдачи заказа')
@@ -113,6 +126,8 @@ class Order(models.Model):
     readiness = models.BooleanField('Готовность')
     hypperlink = models.CharField('Гипперссылка', max_length=100, default='Ссылка...')
     completeness = models.BooleanField('Заказ завершен', default=False)
+    postprint = models.ForeignKey(Postprint, verbose_name='Постпечать', on_delete=models.SET_NULL,
+                                  null=True, default=1)
 
     class Meta:
         ordering = ('-date_of_acceptance_of_the_order',)

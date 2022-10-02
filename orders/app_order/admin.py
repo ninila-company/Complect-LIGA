@@ -1,15 +1,17 @@
+import csv
+import datetime
+
+from bs4 import BeautifulSoup
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
-
-from .models import Customer, Equipment, Manager, Order, PaymentType, ProductType
-
-import csv
-import datetime
 from django.http import HttpResponse
-
-from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.utils.safestring import mark_safe
+from openpyxl import load_workbook
+
+from .models import (Customer, Equipment, Manager, Order, PaymentType,
+                     Postprint, ProductType)
 
 
 class OrderAdminForm(forms.ModelForm):
@@ -45,12 +47,64 @@ class CastomerAdmit(admin.ModelAdmin):
     list_display = ('name', 'email', 'phoneNumber')
 
 
+@admin.register(Postprint)
+class PostprintAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+# экспорт данных в xlsx файл
+def admin_order_xlsx(modeladmin, request, queryset):
+    """Наряд заказ."""
+    opts = modeladmin.model._meta
+
+    # если из докера то добавь /app/orders
+    fn = 'static/smart_order.xlsx'
+    wb = load_workbook(fn)
+
+    fields = [field for field in opts.get_fields()]
+    list_value = []
+    for obj in queryset:
+        for field in fields:
+            value = getattr(obj, field.name)
+            list_value.append(value)
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename={list_value[3]}.xlsx'
+
+    ws = wb['list1']
+    ws['G8'] = list_value[1]  # номер заказа
+    ws['C15'] = list_value[2]  # название заказа
+    ws['C13'] = str(list_value[4])  # тип продукции
+
+    soup = BeautifulSoup(list_value[5], 'html.parser')
+    ws['C48'] = soup.get_text()  # описание
+
+    ws['B11'] = str(list_value[7])  # заказчик
+    ws['B17'] = list_value[8]  # тираж
+    ws['I22'] = str(list_value[9])  # оборудование
+    ws['B85'] = str(list_value[12])  # менеджер
+    ws['B5'] = list_value[13]  # сумма договора
+    ws['D5'] = str(list_value[15])  # вид платежа
+    ws['B53'] = list_value[17]  # ссылка
+    ws['C40'] = str(list_value[19])  # постпечать
+
+    wb.save(fn)
+    wb.save(response)
+    wb.close()
+
+    return response
+
+
+admin_order_xlsx.short_description = 'Наряд заказ'
+
+
 # экспорт данных в csv файл
 def export_to_csv(modeladmin, request, queryset):
     """Генерация csv файла."""
     opts = modeladmin.model._meta
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename={opts.verbose_name}.csv'
+    response['Content-Disposition'] = 'attachment; filename=list-orders.csv'
     writer = csv.writer(response)
     fields = [field for field in opts.get_fields()]
     # заголовки колонок
@@ -80,14 +134,14 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('name', 'number_order', 'year', 'customer', 'product_type', 'circulation',
                     'equipment', 'date_of_acceptance_of_the_order', 'date_of_delivery_of_the_order',
                     'manager', 'the_amount_of_the_deal', 'the_date_of_payment', 'payment_type',
-                    'hypperlink', 'readiness', 'completeness', 'order_pdf')
+                    'postprint', 'hypperlink', 'readiness', 'completeness', 'order_pdf')
     prepopulated_fields = {'slug': ('name',)}
     list_filter = ('manager', 'date_of_acceptance_of_the_order', 'customer', 'equipment',
                    'product_type')
     list_editable = ('manager', 'readiness', 'completeness')
     save_on_top = True
     form = OrderAdminForm
-    actions = [export_to_csv]
+    actions = [export_to_csv, admin_order_xlsx]
 
     def order_pdf(self, obj):
         return mark_safe('<a href="{}">PDF</a>'.format(
