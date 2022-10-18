@@ -1,41 +1,113 @@
 {% extends "app_order/base.html" %}
 {% load static %}
 
+{% block title %}
+    {{ title }}
+{% endblock title %}
+
 {% block content %}
-    <div class="container mt-5">
-        <table class="table table-secondary">
-            <thead>
-                <tr>
-                    <th scope="col">Номер заказа</th>
-                    <th scope="col">Название заказа</th>
-                    <th scope="col">Заказчик</th>
-                    <th scope="col">Менеджер</th>
-                    <th scope="col">Дата сдачи заказа</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    {% if order.readiness == True %}
-                    <td class="table-success">{{ order.number_order }}</td>
-                    <td class="table-success">
-                        <a href="{{ order.get_absolute_url }}">{{ order.name }}</a>
-                    </td>
-                    <td class="table-success">{{ order.customer }}</td>
-                    <td class="table-success">{{ order.manager }}</td>
-                    <td class="table-success">{{ order.date_of_delivery_of_the_order }}</td>
-                    {% else %}
-                    <td class="table-warning">{{ order.number_order }}</td>
-                    <td class="table-warning">
-                        <a href="{{ order.get_absolute_url }}">{{ order.name }}</a>
-                    </td>
-                    <td class="table-warning">{{ order.customer }}</td>
-                    <td class="table-warning">{{ order.manager }}</td>
-                    <td class="table-warning">{{ order.date_of_delivery_of_the_order }}</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="container mt-3">
+
+    <form action="{% url 'order:filter' %}" method="get">
+        <div class="flex-shrink-0 bg-white">
+            <div class="row">
+                <ul class="list-unstyled ps-0 col">
+                    {% for manager in view.get_managers %}
+                        <li class="m-1">
+                            <input type="checkbox" class="checked" name="managerName" value="{{ manager.name }}">
+                            <span>{{ manager.name }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <ul class="list-unstyled ps-0 col">
+                    {% for equipment in view.get_equipment %}
+                    <li class="m-1">
+                        <input type="checkbox" class="checked" name="equipmentName" value="{{ equipment.name }}">
+                        <span>{{ equipment.name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <ul class="list-unstyled ps-0 col">
+                    {% for type in view.get_type %}
+                    <li class="m-1">
+                        <input type="checkbox" class="checked" name="producttypeName" value="{{ type.name }}">
+                        <span>{{ type.name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button type="submit" class="btn btn-outline-primary">Выбрать</button>
+            <div class="border-top my-3"></div>
+        </div>
+    </form>
+
+    <p>Итоговая сумма: {{ view.get_total }} ₽</p>
+
+    <table class="table table-secondary">
+        <thead>
+            <tr>
+                <th scope="col">Номер заказа</th>
+                <th scope="col">Название заказа</th>
+                <th scope="col">Заказчик</th>
+                <th scope="col">Менеджер</th>
+                <th scope="col">Дата сдачи заказа</th>
+                <th scope="col">Оборудование</th>
+                <th scope="col">Тип продукции</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in order_list %}
+            <tr>
+                {% if order.completeness == True %}
+                <td class="table-light">
+                    <s>{{ order.number_order }}</s>
+                </td>
+                <td class="table-light">
+                    <s><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.customer }}</s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.manager }}</s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.date_of_delivery_of_the_order }}</s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.equipment }}</s>
+                </td>
+                <td class="table-light">
+                    <s>{{ order.product_type }}</s>
+                </td>
+
+                {% elif order.readiness == True %}
+                <td class="table-success">{{ order.number_order }}</td>
+                <td class="table-success">
+                    <a href="{{ order.get_absolute_url }}">{{ order.name }}</a>
+                </td>
+                <td class="table-success">{{ order.customer }}</td>
+                <td class="table-success">{{ order.manager }}</td>
+                <td class="table-success">{{ order.date_of_delivery_of_the_order }}</td>
+                <td class="table-success">{{ order.equipment }}</td>
+                <td class="table-success">{{ order.product_type }}</td>
+
+                {% else %}
+                <td class="table-warning">{{ order.number_order }}</td>
+                <td class="table-warning">
+                    <a href="{{ order.get_absolute_url }}">{{ order.name }}</a>
+                </td>
+                <td class="table-warning">{{ order.customer }}</td>
+                <td class="table-warning">{{ order.manager }}</td>
+                <td class="table-warning">{{ order.date_of_delivery_of_the_order }}</td>
+                <td class="table-warning">{{ order.equipment }}</td>
+                <td class="table-warning">{{ order.product_type }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock content %}

@@ -52,6 +52,34 @@ class PaymentType(models.Model):
         return self.name
 
 
+class ProductType(models.Model):
+    """Тип продукции"""
+
+    name = models.CharField('Тип продукции', max_length=100)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'Тип продукции'
+        verbose_name_plural = 'Типы продукции'
+
+    def __str__(self):
+        return self.name
+
+
+class Postprint(models.Model):
+    """Постпечать"""
+
+    name = models.CharField('Постпечать', max_length=200)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'Постпечать'
+        verbose_name_plural = 'Постпечать'
+
+    def __str__(self):
+        return self.name
+
+
 class Customer(models.Model):
     """Заказчик."""
 
@@ -77,13 +105,16 @@ class Order(models.Model):
     number_order = models.PositiveSmallIntegerField('Номер заказа')
     name = models.CharField('Название заказа', max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
-    description = models.TextField('Описание заказа', default='Описание...', blank=True)
+    product_type = models.ForeignKey(ProductType, verbose_name='Тип продукции',
+                                     on_delete=models.SET_NULL, null=True)
+    description = models.TextField('Описание заказа', default='Описание...')
     year = models.PositiveSmallIntegerField('Год')
     customer = models.ForeignKey(Customer, verbose_name='Заказчик', on_delete=models.SET_NULL,
                                  null=True)
-    circulation = models.PositiveSmallIntegerField('Тираж')
+    circulation = models.PositiveIntegerField('Тираж')
     equipment = models.ForeignKey(Equipment, verbose_name='Название оборудования',
-                                  on_delete=models.SET_NULL, null=True)
+                                  on_delete=models.SET_NULL, null=True,
+                                  default=1)
     date_of_acceptance_of_the_order = models.DateField('Дата принятия заказа',
                                                        default=date.today)
     date_of_delivery_of_the_order = models.DateField('Дата сдачи заказа')
@@ -94,7 +125,10 @@ class Order(models.Model):
     payment_type = models.ForeignKey(PaymentType, verbose_name='Вид платежа',
                                      on_delete=models.SET_NULL, null=True)
     readiness = models.BooleanField('Готовность')
-    hypperlink = models.CharField('Гипперссылка', max_length=100)
+    hypperlink = models.CharField('Гипперссылка', max_length=100, default='Ссылка...')
+    completeness = models.BooleanField('Заказ завершен', default=False)
+    postprint = models.ManyToManyField(Postprint, verbose_name='Постпечать',
+                                       default=1)
 
     class Meta:
         ordering = ('-date_of_acceptance_of_the_order',)
@@ -104,8 +138,5 @@ class Order(models.Model):
     def __str__(self):
         return self.name
 
-    # def get_absolute_url(self):
-    #     # return "/admin/app_order/order/%i/change" % self.id
-
     def get_absolute_url(self):
-        return reverse('app_order:order_detail', args=[self.id, self.slug])
+        return reverse('order:order_detail', kwargs={'id': self.id, 'slug': self.slug})
