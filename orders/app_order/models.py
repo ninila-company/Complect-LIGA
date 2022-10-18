@@ -74,6 +74,7 @@ class Postprint(models.Model):
     class Meta:
         ordering = ('name',)
         verbose_name = 'Постпечать'
+        verbose_name_plural = 'Постпечать'
 
     def __str__(self):
         return self.name
@@ -126,8 +127,8 @@ class Order(models.Model):
     readiness = models.BooleanField('Готовность')
     hypperlink = models.CharField('Гипперссылка', max_length=100, default='Ссылка...')
     completeness = models.BooleanField('Заказ завершен', default=False)
-    postprint = models.ForeignKey(Postprint, verbose_name='Постпечать', on_delete=models.SET_NULL,
-                                  null=True, default=1)
+    postprint = models.ManyToManyField(Postprint, verbose_name='Постпечать',
+                                       default=1)
 
     class Meta:
         ordering = ('-date_of_acceptance_of_the_order',)

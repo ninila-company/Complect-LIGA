@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container px-4 py-5" id="icon-grid">
     <h3 class="pb-2 border-bottom">{{ order.name }} -- <br>
-        <a href="">{{ order.hypperlink }}</a>
+        <a href="{{ order.hypperlink }}">{{ order.hypperlink }}</a>
     </h3>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 py-5">
@@ -142,7 +142,9 @@
             </svg>
             <div>
                 <h4 class="fw-bold mb-0">Постпечать</h4>
-                <p>{{ order.postprint }}</p>
+                {% for value in order.postprint.all %}
+                    <p>{{ value }}</p>
+                {% endfor %}
             </div>
         </div>
     </div>

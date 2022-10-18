@@ -14,6 +14,9 @@ from .models import (Customer, Equipment, Manager, Order, PaymentType,
                      Postprint, ProductType)
 
 
+admin.site.register(Postprint)
+
+
 class OrderAdminForm(forms.ModelForm):
     description = forms.CharField(label='Описание', widget=CKEditorUploadingWidget)
 
@@ -47,18 +50,14 @@ class CastomerAdmit(admin.ModelAdmin):
     list_display = ('name', 'email', 'phoneNumber')
 
 
-@admin.register(Postprint)
-class PostprintAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-
-
 # экспорт данных в xlsx файл
 def admin_order_xlsx(modeladmin, request, queryset):
     """Наряд заказ."""
     opts = modeladmin.model._meta
 
     # если из докера то добавь /app/orders
-    fn = 'static/smart_order.xlsx'
+    fn = 'static/listovki.xlsx'
+    # fn = 'static/smart_order.xlsx'
     wb = load_workbook(fn)
 
     fields = [field for field in opts.get_fields()]
@@ -72,22 +71,37 @@ def admin_order_xlsx(modeladmin, request, queryset):
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename={list_value[3]}.xlsx'
 
-    ws = wb['list1']
+    ws = wb['list1']  # номер листа в документе
     ws['G8'] = list_value[1]  # номер заказа
     ws['C15'] = list_value[2]  # название заказа
     ws['C13'] = str(list_value[4])  # тип продукции
 
     soup = BeautifulSoup(list_value[5], 'html.parser')
-    ws['C48'] = soup.get_text()  # описание
+    ws['C48'] = soup.get_text()  # описание(Убираем все теги html)
 
     ws['B11'] = str(list_value[7])  # заказчик
-    ws['B17'] = list_value[8]  # тираж
+    ws['B17'] = f'{list_value[8]} шт'  # тираж
+    ws['B73'] = f'{list_value[8]} шт'  # тираж
     ws['I22'] = str(list_value[9])  # оборудование
+    ws['I8'] = str(list_value[10])  # дата принятия заказа
+    ws['D3'] = str(list_value[10])  # дата принятия заказа
+    ws['I48'] = str(list_value[11])  # дата сдачи заказа
+    ws['G77'] = str(list_value[11])  # дата сдачи заказа
+    ws['D73'] = str(list_value[11])  # дата сдачи заказа
     ws['B85'] = str(list_value[12])  # менеджер
     ws['B5'] = list_value[13]  # сумма договора
     ws['D5'] = str(list_value[15])  # вид платежа
     ws['B53'] = list_value[17]  # ссылка
-    ws['C40'] = str(list_value[19])  # постпечать
+
+    list_postprint = [str(i) for i in list_value[19].all()]
+    number_cell = 0
+    if len(list_postprint) < 4:
+        list_postprint.extend([''] * (4 - len(list_postprint)))
+    for i in list_postprint:
+        while True:
+            ws[f'C4{number_cell}'] = str(i)  # постпечать
+            break
+        number_cell += 2
 
     wb.save(fn)
     wb.save(response)
@@ -134,10 +148,11 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('name', 'number_order', 'year', 'customer', 'product_type', 'circulation',
                     'equipment', 'date_of_acceptance_of_the_order', 'date_of_delivery_of_the_order',
                     'manager', 'the_amount_of_the_deal', 'the_date_of_payment', 'payment_type',
-                    'postprint', 'hypperlink', 'readiness', 'completeness', 'order_pdf')
+                    'hypperlink', 'readiness', 'completeness', 'order_pdf')
     prepopulated_fields = {'slug': ('name',)}
     list_filter = ('manager', 'date_of_acceptance_of_the_order', 'customer', 'equipment',
                    'product_type')
+    filter_horizontal = ('postprint',)
     list_editable = ('manager', 'readiness', 'completeness')
     save_on_top = True
     form = OrderAdminForm

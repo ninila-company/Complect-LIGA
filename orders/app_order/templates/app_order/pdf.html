@@ -8,9 +8,27 @@
             <div class="card-header">
                 НАРЯД-ЗАКАЗ №{{ order.number_order }}
             </div>
-            <div class="card-body">
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+            <div>
+                <ul>
+                    <li>{{order.name}}</li>
+                    <li>{{order.product_type}}</li>
+                    <li>{{order.description|safe}}</li>
+                    <li>{{order.year}}</li>
+                    <li>{{order.customer}}</li>
+                    <li>{{order.circulation}}</li>
+                    <li>{{order.equipment}}</li>
+                    <li>{{order.date_of_delivery_of_the_order}}</li>
+                    <li>{{order.manager}}</li>
+                    <li>{{order.the_amount_of_the_deal}}</li>
+                    <li>{{order.the_date_of_payment}}</li>
+                    <li>{{order.payment_type}}</li>
+                    <li>{{order.hypperlink}}</li>
+                    <li>
+                        {% for value in order.postprint.all %}
+                            <p>{{ value }}</p>
+                        {% endfor %}
+                    </li>
+                </ul>
             </div>
             <div class="card-footer text-muted">
                 {{ order.date_of_acceptance_of_the_order }}
