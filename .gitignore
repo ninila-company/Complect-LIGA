@@ -57,7 +57,7 @@ Thumbs.db
 
 venv/
 db.sqlite3
-data
+data/
 *.pyc
 media
 static
