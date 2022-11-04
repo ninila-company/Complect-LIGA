@@ -158,7 +158,7 @@ STATIC_URL = '/static/'
 # ]
 
 # Ckeditor collectstatic для сбора статики
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Путь для загрузки файлов
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 
