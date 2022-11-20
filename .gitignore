@@ -60,7 +60,6 @@ db.sqlite3
 data/
 *.pyc
 media
-static
 static_dev
 migrations/
 __init__.py
