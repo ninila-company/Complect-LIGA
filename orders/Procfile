@@ -1,2 +1,2 @@
 web: gunicorn orders.wsgi --log-file -
-web: python manage.py runserver 0.0.0.0:$PORT --noreload
+web: python orders/manage.py runserver 0.0.0.0:$PORT --noreload
